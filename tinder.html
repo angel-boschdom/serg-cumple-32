@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinder Cumple - Swipe Party</title>
+    <style>
+        :root {
+            color-scheme: only light;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            --bg: #111;
+            --card-bg: #1a1a1a;
+            --text: #fff;
+            --muted: #c3c3c3;
+            --accent-like: #3bd389;
+            --accent-pass: #f75e76;
+            --accent-info: #30a7ff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at top, #2d0b45, #050505 45%);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            width: 100%;
+            padding: 20px clamp(16px, 3vw, 40px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: linear-gradient(180deg, rgba(5,5,5,0.95), rgba(5,5,5,0.5), rgba(5,5,5,0));
+            backdrop-filter: blur(6px);
+        }
+
+        header img {
+            height: 36px;
+        }
+
+        .menu {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .menu a {
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .menu a:hover,
+        .menu a:focus {
+            color: var(--text);
+        }
+
+        main {
+            width: min(480px, 92vw);
+            margin: 0 auto 40px;
+            position: relative;
+            flex: 1;
+        }
+
+        .card-stack {
+            position: relative;
+            min-height: 70vh;
+        }
+
+        .tinder-card {
+            position: absolute;
+            inset: 0;
+            background: var(--card-bg);
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+            display: flex;
+            flex-direction: column;
+            touch-action: pan-y;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .tinder-card img {
+            width: 100%;
+            height: 58vh;
+            object-fit: cover;
+        }
+
+        .card-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.85) 100%);
+        }
+
+        .card-content {
+            position: relative;
+            margin-top: -120px;
+            padding: 24px clamp(18px, 4vw, 32px) 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .card-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: clamp(26px, 5vw, 34px);
+            letter-spacing: 0.3px;
+        }
+
+        .card-header span {
+            color: var(--muted);
+            font-size: clamp(14px, 3.2vw, 16px);
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            padding-right: 4px;
+            scrollbar-width: thin;
+        }
+
+        .card-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card-body::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
+        }
+
+        .section-title {
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--muted);
+        }
+
+        .bio {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+        }
+
+        .anthem {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+        }
+
+        .anthem span:first-child {
+            display: inline-flex;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff6a6a, #ff3b3b);
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .card-status {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            padding: 8px 18px;
+            border: 4px solid;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: rotate(-12deg) scale(0.9);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none;
+        }
+
+        .card-status.like {
+            border-color: var(--accent-like);
+            color: var(--accent-like);
+        }
+
+        .card-status.nope {
+            border-color: var(--accent-pass);
+            color: var(--accent-pass);
+            right: 24px;
+            left: auto;
+            transform: rotate(12deg) scale(0.9);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+            margin-top: 24px;
+        }
+
+        .actions button {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: none;
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.2s ease;
+        }
+
+        .actions button:active {
+            transform: scale(0.92);
+        }
+
+        .actions button.like {
+            background: rgba(59, 211, 137, 0.18);
+        }
+
+        .actions button.nope {
+            background: rgba(247, 94, 118, 0.18);
+        }
+
+        .actions button.super {
+            background: rgba(48, 167, 255, 0.18);
+        }
+
+        .empty-state {
+            margin-top: 80px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        @media (max-width: 520px) {
+            header {
+                padding: 16px 20px;
+            }
+            .menu {
+                gap: 10px;
+            }
+            .menu a {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="./assets/tinderlogo.png" alt="Tinder Cumple" />
+        <nav class="menu">
+            <a href="./index.html">Home</a>
+            <a href="./ruleta.html">Ruleta</a>
+            <a href="#" aria-disabled="true" style="opacity:0.4; cursor:default;">Más pronto...</a>
+        </nav>
+    </header>
+    <main>
+        <section class="card-stack" id="cardStack" aria-live="polite"></section>
+        <div class="actions" aria-label="Acciones de swipe">
+            <button class="nope" aria-label="Descartar" data-action="nope">✕</button>
+            <button class="super" aria-label="Super like" data-action="super">★</button>
+            <button class="like" aria-label="Me gusta" data-action="like">❤</button>
+        </div>
+        <div class="empty-state" id="emptyState" hidden>
+            <h3>¡Has visto a todo el mundo!</h3>
+            <p>Vuelve pronto, el equipo del cumple está buscando más matches para ti.</p>
+        </div>
+    </main>
+
+    <script>
+        const profiles = [
+            {
+                name: 'Ángel',
+                age: 29,
+                location: 'Madrid · 3 km',
+                job: 'Diseñador UX en una app de tapas',
+                bio: 'Fan del reggaetón en acústico, coleccionista de chaquetas de cuero y experto improvisado en karaokes.',
+                passions: ['Motos vintage', 'Cocina fusión', 'DJ amateur', 'Gin-tonics con historia'],
+                anthem: 'La vida moderna - Residente',
+                image: './assets/angel.png'
+            },
+            {
+                name: 'Pau',
+                age: 28,
+                location: 'Barcelona · 5 km',
+                job: 'Ingeniera aeroespacial',
+                bio: 'Puedo construir drones, pero también una paella brutal. Me apunto a cualquier plan con playa o terrazas.',
+                passions: ['Triatlón', 'Fotografía analógica', 'Viajes improvisados', 'Aperitivos eternos'],
+                anthem: 'Tú me dejaste de querer - C. Tangana',
+                image: './assets/pau.png'
+            },
+            {
+                name: 'Sergio',
+                age: 30,
+                location: 'Madrid · 1 km',
+                job: 'Product manager y cumpleañero oficial',
+                bio: 'Organizo fiestas como si fueran releases. Me encanta bailar reggaetón noventero y tengo playlist para cada momento.',
+                passions: ['Brunch con amigos', 'Pistas de esquí', 'Vinilos clásicos', 'Maratones de series'],
+                anthem: 'As it was - Harry Styles',
+                image: './assets/sergio.png'
+            },
+            {
+                name: 'Adrián',
+                age: 27,
+                location: 'Valencia · 6 km',
+                job: 'Arquitecto de experiencias inmersivas',
+                bio: 'De día diseño espacios, de noche mezclo cócteles. Siempre tengo un plan cultural y uno clandestino.',
+                passions: ['Arte urbano', 'Realidad virtual', 'Rutas en moto', 'Cine de autor'],
+                anthem: 'Midnight City - M83',
+                image: './assets/adrian.png'
+            },
+            {
+                name: 'Pablo',
+                age: 31,
+                location: 'Sevilla · 2 km',
+                job: 'Chef creativo y storyteller gastronómico',
+                bio: 'Si no estás bailando mientras cocino, algo estamos haciendo mal. Premio a la mejor tortilla en 2023 (según mi abuela).',
+                passions: ['Salsa', 'Mercados callejeros', 'Vinilos funk', 'Catas secretas'],
+                anthem: 'Bailando - Alaska y Dinarama',
+                image: './assets/pablo.jpg'
+            },
+            {
+                name: 'Dani',
+                age: 29,
+                location: 'Bilbao · 4 km',
+                job: 'Ingeniero de sonido en festivales',
+                bio: 'Tengo un don para conseguir backstage y hacerte fan de bandas que aún no existen. Sí, llevo tapones en el bolsillo.',
+                passions: ['Festivales', 'Rutas de pintxos', 'Escalada', 'Sintetizadores'],
+                anthem: 'Blinding Lights - The Weeknd',
+                image: './assets/dani.png'
+            }
+        ];
+
+        const stack = document.getElementById('cardStack');
+        const emptyState = document.getElementById('emptyState');
+        let currentIndex = 0;
+
+        function createCard(profile, index) {
+            const card = document.createElement('article');
+            card.className = 'tinder-card';
+            card.setAttribute('role', 'group');
+            card.setAttribute('aria-roledescription', 'Tarjeta de perfil');
+            card.setAttribute('aria-label', `${profile.name}, ${profile.age}`);
+            card.style.zIndex = profiles.length - index;
+
+            card.innerHTML = `
+                <div class="card-status like">MATCH</div>
+                <div class="card-status nope">NOPE</div>
+                <img src="${profile.image}" alt="${profile.name}" loading="lazy" />
+                <div class="card-gradient" aria-hidden="true"></div>
+                <div class="card-content">
+                    <header class="card-header">
+                        <h2>${profile.name}, ${profile.age}</h2>
+                        <span>${profile.location}</span>
+                        <span>${profile.job}</span>
+                    </header>
+                    <div class="card-body">
+                        <div>
+                            <p class="section-title">Acerca de</p>
+                            <p class="bio">${profile.bio}</p>
+                        </div>
+                        <div>
+                            <p class="section-title">Pasiones</p>
+                            <div class="tags">
+                                ${profile.passions.map((passion) => `<span class="tag">${passion}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <p class="section-title">Himno del perfil</p>
+                            <div class="anthem">
+                                <span>♪</span>
+                                <div>
+                                    <strong>${profile.anthem}</strong>
+                                    <p style="margin:4px 0 0;color:var(--muted);font-size:13px;">Spotify no incluido, sorry.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            initializeSwipe(card);
+            return card;
+        }
+
+        function renderStack() {
+            stack.innerHTML = '';
+            profiles.slice(currentIndex).forEach((profile, idx) => {
+                const card = createCard(profile, idx);
+                card.style.transform = `scale(${1 - idx * 0.05}) translateY(${idx * 16}px)`;
+                card.style.opacity = idx > 2 ? 0 : 1;
+                stack.appendChild(card);
+            });
+
+            if (currentIndex >= profiles.length) {
+                emptyState.hidden = false;
+            } else {
+                emptyState.hidden = true;
+            }
+        }
+
+        function handleChoice(direction) {
+            const card = stack.querySelector('.tinder-card');
+            if (!card) return;
+
+            const flyOutDistance = direction === 'like' ? window.innerWidth : -window.innerWidth;
+            card.style.transition = 'transform 0.4s ease, opacity 0.3s ease';
+            card.style.transform = `translate(${flyOutDistance}px, -40px) rotate(${direction === 'like' ? 20 : -20}deg)`;
+            card.style.opacity = '0';
+
+            setTimeout(() => {
+                currentIndex += 1;
+                renderStack();
+            }, 280);
+        }
+
+        function initializeSwipe(card) {
+            let startX = 0;
+            let startY = 0;
+            let currentX = 0;
+            let currentY = 0;
+            let isDragging = false;
+
+            const likeStamp = card.querySelector('.card-status.like');
+            const nopeStamp = card.querySelector('.card-status.nope');
+
+            function updateStatus(distanceX) {
+                const opacity = Math.min(Math.abs(distanceX) / 160, 1);
+                if (distanceX > 0) {
+                    likeStamp.style.opacity = opacity;
+                    likeStamp.style.transform = `rotate(-12deg) scale(${0.9 + opacity * 0.2})`;
+                    nopeStamp.style.opacity = 0;
+                } else {
+                    nopeStamp.style.opacity = opacity;
+                    nopeStamp.style.transform = `rotate(12deg) scale(${0.9 + opacity * 0.2})`;
+                    likeStamp.style.opacity = 0;
+                }
+            }
+
+            function onPointerDown(event) {
+                isDragging = true;
+                startX = event.clientX || event.touches?.[0]?.clientX || 0;
+                startY = event.clientY || event.touches?.[0]?.clientY || 0;
+                card.style.transition = 'none';
+                document.addEventListener('pointermove', onPointerMove);
+                document.addEventListener('pointerup', onPointerUp);
+                document.addEventListener('touchmove', onPointerMove, { passive: false });
+                document.addEventListener('touchend', onPointerUp);
+            }
+
+            function onPointerMove(event) {
+                if (!isDragging) return;
+                if (event.type === 'touchmove') event.preventDefault();
+                currentX = event.clientX || event.touches?.[0]?.clientX || 0;
+                currentY = event.clientY || event.touches?.[0]?.clientY || 0;
+
+                const deltaX = currentX - startX;
+                const deltaY = currentY - startY;
+                const rotation = deltaX * 0.05;
+
+                card.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotation}deg)`;
+                updateStatus(deltaX);
+            }
+
+            function onPointerUp() {
+                if (!isDragging) return;
+                isDragging = false;
+                document.removeEventListener('pointermove', onPointerMove);
+                document.removeEventListener('pointerup', onPointerUp);
+                document.removeEventListener('touchmove', onPointerMove);
+                document.removeEventListener('touchend', onPointerUp);
+
+                const deltaX = currentX - startX;
+                if (Math.abs(deltaX) > 160) {
+                    handleChoice(deltaX > 0 ? 'like' : 'nope');
+                } else {
+                    card.style.transition = 'transform 0.25s ease';
+                    card.style.transform = '';
+                    likeStamp.style.opacity = 0;
+                    nopeStamp.style.opacity = 0;
+                }
+            }
+
+            card.addEventListener('pointerdown', onPointerDown);
+            card.addEventListener('touchstart', (event) => {
+                event.preventDefault();
+                onPointerDown(event.touches[0]);
+            }, { passive: false });
+        }
+
+        document.querySelectorAll('.actions button').forEach((button) => {
+            button.addEventListener('click', () => {
+                const action = button.dataset.action;
+                if (action === 'super') {
+                    const card = stack.querySelector('.tinder-card');
+                    if (!card) return;
+                    card.style.transition = 'transform 0.45s ease, opacity 0.3s ease';
+                    card.style.transform = 'translate(0, -80vh) scale(0.6)';
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        currentIndex += 1;
+                        renderStack();
+                    }, 320);
+                } else {
+                    handleChoice(action);
+                }
+            });
+        });
+
+        renderStack();
+    </script>
+</body>
+</html>
