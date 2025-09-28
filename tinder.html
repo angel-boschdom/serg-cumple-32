@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinder Cumple</title>
+    <style>
+        :root {
+            --bg-dark: #111217;
+            --bg-card: rgba(17, 18, 23, 0.7);
+            --accent: #ff4458;
+            --accent-like: #4cd964;
+            --accent-nope: #ff3b30;
+            --accent-star: #38bdf8;
+            --text-primary: #fff;
+            --text-muted: rgba(255, 255, 255, 0.75);
+            --card-radius: 28px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at 20% 20%, #2a002b, #150009 45%, #050206 100%);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px 16px;
+        }
+
+        .app {
+            position: relative;
+            width: min(420px, 100%);
+            height: min(750px, calc(100vh - 32px));
+            max-height: 820px;
+            background: linear-gradient(160deg, rgba(28, 27, 38, 0.95) 10%, rgba(12, 12, 18, 0.92) 70%, rgba(12, 12, 18, 0.88) 100%);
+            border-radius: 34px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+            padding: 24px 20px 90px;
+            overflow: hidden;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        header h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .app-logo {
+            display: inline-flex;
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #ff6b6b, #ff375f);
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-primary);
+            box-shadow: 0 8px 20px rgba(255, 68, 88, 0.35);
+        }
+
+        .menu {
+            position: absolute;
+            top: 20px;
+            right: 28px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 40;
+        }
+
+        .menu-icon {
+            width: 46px;
+            height: 46px;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            backdrop-filter: blur(6px);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 58px;
+            background-color: rgba(24, 24, 32, 0.96);
+            border-radius: 18px;
+            min-width: 240px;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 14px 18px;
+            text-decoration: none;
+            display: block;
+            font-size: 15px;
+            transition: background 0.2s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu:hover .dropdown-content {
+            display: block;
+        }
+
+        .cards {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 110px);
+        }
+
+        .tinder-card {
+            position: absolute;
+            inset: 0;
+            border-radius: var(--card-radius);
+            background: #222;
+            background-image: var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: transform 0.35s ease, opacity 0.35s ease;
+            cursor: grab;
+            pointer-events: none;
+        }
+
+        .tinder-card:first-child {
+            pointer-events: auto;
+        }
+
+        .tinder-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.85) 85%);
+            z-index: 1;
+        }
+
+        .tinder-card:nth-child(1) {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .tinder-card:nth-child(2) {
+            transform: translateY(18px) scale(0.97);
+            opacity: 0.9;
+        }
+
+        .tinder-card:nth-child(3) {
+            transform: translateY(36px) scale(0.94);
+            opacity: 0.85;
+        }
+
+        .card-info {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 20px;
+            height: 100%;
+            padding: 30px 24px 32px;
+            overflow-y: auto;
+            scrollbar-width: none;
+            background: linear-gradient(180deg, rgba(5, 6, 12, 0.15) 0%, rgba(7, 8, 16, 0.72) 45%, rgba(7, 8, 16, 0.92) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .card-info::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        .card-header h2 {
+            font-size: 28px;
+            margin: 0 0 4px;
+            line-height: 1.1;
+        }
+
+        .card-header span {
+            font-size: 17px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .card-header .location {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            font-size: 15px;
+        }
+
+        .scroll-hint {
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: -6px;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .section {
+            margin: 0;
+        }
+
+        .section h3 {
+            margin: 0 0 10px;
+            font-size: 17px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .section p,
+        .section li {
+            margin: 0 0 8px;
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+
+        .section ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 8px 12px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.12);
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .anthem {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        .badges {
+            position: absolute;
+            top: 28px;
+            left: 24px;
+            right: 24px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .badge {
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            font-size: 16px;
+            opacity: 0;
+            transform: rotate(-12deg);
+            border: 2px solid transparent;
+            transition: opacity 0.2s ease;
+        }
+
+        .badge.like {
+            color: var(--accent-like);
+            border-color: rgba(76, 217, 100, 0.6);
+        }
+
+        .badge.nope {
+            color: var(--accent-nope);
+            border-color: rgba(255, 59, 48, 0.6);
+            transform: rotate(12deg);
+        }
+
+        .actions {
+            position: absolute;
+            bottom: 28px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+            z-index: 30;
+        }
+
+        .action-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+            color: #fff;
+        }
+
+        .action-btn:active {
+            transform: scale(0.92);
+        }
+
+        .action-btn.nope {
+            background: linear-gradient(145deg, rgba(255, 59, 48, 0.9), rgba(255, 59, 48, 0.7));
+            box-shadow: 0 12px 30px rgba(255, 59, 48, 0.4);
+        }
+
+        .action-btn.superlike {
+            background: linear-gradient(145deg, rgba(56, 189, 248, 0.9), rgba(56, 189, 248, 0.7));
+            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.35);
+        }
+
+        .action-btn.like {
+            background: linear-gradient(145deg, rgba(76, 217, 100, 0.95), rgba(76, 217, 100, 0.75));
+            box-shadow: 0 12px 30px rgba(76, 217, 100, 0.35);
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .app {
+                width: 100%;
+                height: calc(100vh - 24px);
+                padding: 24px 16px 88px;
+            }
+
+            .actions {
+                gap: 16px;
+            }
+
+            .action-btn {
+                width: 62px;
+                height: 62px;
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <div class="menu-icon">☰</div>
+        <div class="dropdown-content">
+            <a href="./index.html">Home Page</a>
+            <a href="./aboutsergio.html">Quién es Sergio?</a>
+            <a href="./aboutteam.html">Equipo cumple</a>
+            <a href="./ruletaretos.html">Ruleta de la suerte!</a>
+            <a href="./tinder.html">Juega al Tinder!</a>
+        </div>
+    </div>
+
+    <div class="app">
+        <header>
+            <div>
+                <h1>Ibétics Tinder</h1>
+                <span style="color: rgba(255,255,255,0.55); font-size: 14px; letter-spacing: 0.6px;">Desliza para encontrar tu match en la crew</span>
+            </div>
+            <div class="app-logo">🔥</div>
+        </header>
+
+        <div class="cards">
+            <article class="tinder-card" style="--bg-image: url('./assets/angel.png');">
+                <div class="badges">
+                    <span class="badge like">ME GUSTA</span>
+                    <span class="badge nope">NOPE</span>
+                </div>
+                <div class="card-info">
+                    <div class="card-header">
+                        <h2>Ángel, 29</h2>
+                        <span>Productor musical &amp; DJ</span>
+                        <div class="location">📍 Malasaña · 3 km</div>
+                    </div>
+                    <div class="scroll-hint">Desliza hacia arriba para ver más</div>
+                    <section class="section">
+                        <h3>Biografía</h3>
+                        <p>Vivo por las noches largas, los vinilos raros y los bajos que te hacen vibrar el pecho. Si la fiesta necesita energía, soy el enchufe.</p>
+                    </section>
+                    <section class="section">
+                        <h3>Pasiones</h3>
+                        <div class="tags">
+                            <span class="tag">🎧 House clásico</span>
+                            <span class="tag">🥘 Brunch con la crew</span>
+                            <span class="tag">🛹 Skate en el río</span>
+                            <span class="tag">📷 Analógico</span>
+                        </div>
+                    </section>
+                    <section class="section">
+                        <h3>Básicos</h3>
+                        <ul>
+                            <li>Altura 1,83 · ENTP · Sarcasmo nativo</li>
+                            <li>Café frío > Café caliente</li>
+                            <li>Siempre listo para improvisar un after</li>
+                        </ul>
+                    </section>
+                    <section class="section">
+                        <h3>Mi himno</h3>
+                        <div class="anthem">🎵 "Midnight City" · M83</div>
+                    </section>
+                </div>
+            </article>
+
+            <article class="tinder-card" style="--bg-image: url('./assets/pau.png');">
+                <div class="badges">
+                    <span class="badge like">MATCH</span>
+                    <span class="badge nope">NOPE</span>
+                </div>
+                <div class="card-info">
+                    <div class="card-header">
+                        <h2>Pau, 28</h2>
+                        <span>Curadora de arte &amp; foodie</span>
+                        <div class="location">📍 Lavapiés · 1 km</div>
+                    </div>
+                    <div class="scroll-hint">Desliza hacia arriba para ver más</div>
+                    <section class="section">
+                        <h3>Biografía</h3>
+                        <p>Expat catalana con debilidad por los museos clandestinos y los planes sin avisar. Si te emocionas con una buena sobremesa, ya tenemos match.</p>
+                    </section>
+                    <section class="section">
+                        <h3>Pasiones</h3>
+                        <div class="tags">
+                            <span class="tag">🎨 Vernissages</span>
+                            <span class="tag">🍷 Vinos naturales</span>
+                            <span class="tag">🚲 Bicis vintage</span>
+                            <span class="tag">📚 Fanzines</span>
+                        </div>
+                    </section>
+                    <section class="section">
+                        <h3>Básicos</h3>
+                        <ul>
+                            <li>1,68 · ENFP · Fluent en catalán, español e ironías</li>
+                            <li>Vegetariana que se sabe todas las bravas de Madrid</li>
+                            <li>Busco compi para festivales boutique</li>
+                        </ul>
+                    </section>
+                    <section class="section">
+                        <h3>Mi himno</h3>
+                        <div class="anthem">🎵 "Toda la vida" · Sidonie</div>
+                    </section>
+                </div>
+            </article>
+
+            <article class="tinder-card" style="--bg-image: url('./assets/sergio.png');">
+                <div class="badges">
+                    <span class="badge like">IT'S A MATCH</span>
+                    <span class="badge nope">NOPE</span>
+                </div>
+                <div class="card-info">
+                    <div class="card-header">
+                        <h2>Sergio, 30</h2>
+                        <span>Capitán del equipo Ibétics</span>
+                        <div class="location">📍 Madrid Centro · 0 km</div>
+                    </div>
+                    <div class="scroll-hint">Desliza hacia arriba para ver más</div>
+                    <section class="section">
+                        <h3>Biografía</h3>
+                        <p>Cumplo 30 y lo celebro como si fuera la final de Champions. Organizador de planes imposibles, anfitrión profesional y tu mejor hype-man.</p>
+                    </section>
+                    <section class="section">
+                        <h3>Pasiones</h3>
+                        <div class="tags">
+                            <span class="tag">⚽ Futbito de los jueves</span>
+                            <span class="tag">🍹 Mixología casera</span>
+                            <span class="tag">🎮 Co-op nights</span>
+                            <span class="tag">📸 Recuerdos polaroid</span>
+                        </div>
+                    </section>
+                    <section class="section">
+                        <h3>Básicos</h3>
+                        <ul>
+                            <li>1,80 · ENFJ · Amante de los excel con códigos de color</li>
+                            <li>Siempre tengo playlists listas para cada mood</li>
+                            <li>Cervecero selectivo, pero nunca elitista</li>
+                        </ul>
+                    </section>
+                    <section class="section">
+                        <h3>Mi himno</h3>
+                        <div class="anthem">🎵 "I Gotta Feeling" · Black Eyed Peas</div>
+                    </section>
+                </div>
+            </article>
+
+            <article class="tinder-card" style="--bg-image: url('./assets/adrian.png');">
+                <div class="badges">
+                    <span class="badge like">LIKE</span>
+                    <span class="badge nope">NOPE</span>
+                </div>
+                <div class="card-info">
+                    <div class="card-header">
+                        <h2>Adrián, 31</h2>
+                        <span>Ingeniero foodie</span>
+                        <div class="location">📍 Delicias · 4 km</div>
+                    </div>
+                    <div class="scroll-hint">Desliza hacia arriba para ver más</div>
+                    <section class="section">
+                        <h3>Biografía</h3>
+                        <p>Diseño puentes durante el día, diseño cenas de siete platos por la noche. Si se puede medir, lo optimizo; si se puede saborear, lo comparto.</p>
+                    </section>
+                    <section class="section">
+                        <h3>Pasiones</h3>
+                        <div class="tags">
+                            <span class="tag">🍣 Sushi casero</span>
+                            <span class="tag">🚀 Ciencia pop</span>
+                            <span class="tag">🚴‍♂️ Escapadas gravel</span>
+                            <span class="tag">🎲 Juegos de mesa</span>
+                        </div>
+                    </section>
+                    <section class="section">
+                        <h3>Básicos</h3>
+                        <ul>
+                            <li>1,86 · INTJ · Fan de los chistes malos</li>
+                            <li>Team siesta pero solo 23 minutos</li>
+                            <li>Busco compi para probar todos los estrellas de Madrid</li>
+                        </ul>
+                    </section>
+                    <section class="section">
+                        <h3>Mi himno</h3>
+                        <div class="anthem">🎵 "Nina Cried Power" · Hozier</div>
+                    </section>
+                </div>
+            </article>
+
+            <article class="tinder-card" style="--bg-image: url('./assets/pablo.jpg');">
+                <div class="badges">
+                    <span class="badge like">ME GUSTA</span>
+                    <span class="badge nope">NOPE</span>
+                </div>
+                <div class="card-info">
+                    <div class="card-header">
+                        <h2>Pablo, 30</h2>
+                        <span>Arquitecto de sonrisas</span>
+                        <div class="location">📍 Chamberí · 2 km</div>
+                    </div>
+                    <div class="scroll-hint">Desliza hacia arriba para ver más</div>
+                    <section class="section">
+                        <h3>Biografía</h3>
+                        <p>Lo mismo te levanto un mueble de IKEA que te levanto el ánimo. Arquitecto, voluntario los domingos y mejor amigo de los perretes.</p>
+                    </section>
+                    <section class="section">
+                        <h3>Pasiones</h3>
+                        <div class="tags">
+                            <span class="tag">🐶 Paseos perrunos</span>
+                            <span class="tag">🏕️ Acampadas</span>
+                            <span class="tag">📚 Novela negra</span>
+                            <span class="tag">🎤 Karaoke dramático</span>
+                        </div>
+                    </section>
+                    <section class="section">
+                        <h3>Básicos</h3>
+                        <ul>
+                            <li>1,78 · ISFJ · Siempre con snacks extra</li>
+                            <li>Me tomo muy en serio las sobremesas infinitas</li>
+                            <li>Mi perro Luppo aprueba a quien sonríe mucho</li>
+                        </ul>
+                    </section>
+                    <section class="section">
+                        <h3>Mi himno</h3>
+                        <div class="anthem">🎵 "Flor de un día" · Arde Bogotá</div>
+                    </section>
+                </div>
+            </article>
+
+            <article class="tinder-card" style="--bg-image: url('./assets/dani.png');">
+                <div class="badges">
+                    <span class="badge like">LIKE</span>
+                    <span class="badge nope">NOPE</span>
+                </div>
+                <div class="card-info">
+                    <div class="card-header">
+                        <h2>Dani, 27</h2>
+                        <span>Entrenador &amp; meme dealer</span>
+                        <div class="location">📍 Retiro · 5 km</div>
+                    </div>
+                    <div class="scroll-hint">Desliza hacia arriba para ver más</div>
+                    <section class="section">
+                        <h3>Biografía</h3>
+                        <p>Coach matutino, DJ de memes por la tarde. Te entreno, te preparo el mejor batido y te envío reels personalizados para que sonrías.</p>
+                    </section>
+                    <section class="section">
+                        <h3>Pasiones</h3>
+                        <div class="tags">
+                            <span class="tag">🏋️‍♂️ Crossfit</span>
+                            <span class="tag">🎮 Retro gaming</span>
+                            <span class="tag">🥁 Percusión</span>
+                            <span class="tag">🌮 Tacos caseros</span>
+                        </div>
+                    </section>
+                    <section class="section">
+                        <h3>Básicos</h3>
+                        <ul>
+                            <li>1,75 · ESFP · Despierta antes de las 6 (voluntariamente)</li>
+                            <li>Domingos de parque y frisbee</li>
+                            <li>Tu hype coach para cualquier reto</li>
+                        </ul>
+                    </section>
+                    <section class="section">
+                        <h3>Mi himno</h3>
+                        <div class="anthem">🎵 "Can't Stop The Feeling" · Justin Timberlake</div>
+                    </section>
+                </div>
+            </article>
+        </div>
+
+        <div class="actions">
+            <button class="action-btn nope" type="button" data-action="nope">✕</button>
+            <button class="action-btn superlike" type="button" data-action="superlike">★</button>
+            <button class="action-btn like" type="button" data-action="like">♥</button>
+        </div>
+    </div>
+
+    <script>
+        const cardsContainer = document.querySelector('.cards');
+        const actionButtons = document.querySelectorAll('[data-action]');
+        let activeCard = null;
+        let startX = 0;
+        let startY = 0;
+        let isDragging = false;
+        let currentPointerId = null;
+        let dragInitiated = false;
+        let pointerDownOnContent = false;
+
+        function resetCard(card) {
+            card.style.transition = 'transform 0.35s ease, opacity 0.35s ease';
+            card.style.transform = '';
+            card.style.opacity = '';
+            const badges = card.querySelectorAll('.badge');
+            badges.forEach(badge => (badge.style.opacity = 0));
+            setTimeout(() => {
+                card.style.transition = '';
+            }, 360);
+        }
+
+        function stackToBack(card) {
+            card.classList.add('swiped');
+            setTimeout(() => {
+                cardsContainer.appendChild(card);
+                card.classList.remove('swiped');
+                card.style.transition = '';
+                card.style.transform = '';
+                card.style.opacity = '';
+            }, 360);
+        }
+
+        function clearDragState() {
+            activeCard = null;
+            isDragging = false;
+            dragInitiated = false;
+            pointerDownOnContent = false;
+            currentPointerId = null;
+        }
+
+        function handleSwipe(card, direction, velocityY = 0) {
+            card.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+            const horizontal = direction === 'right' ? window.innerWidth * 1.1 : direction === 'left' ? -window.innerWidth * 1.1 : 0;
+            const vertical = direction === 'up' ? -window.innerHeight * 0.9 : velocityY * 0.5;
+            const rotation = direction === 'left' ? -24 : direction === 'right' ? 24 : 0;
+            card.style.transform = `translate(${horizontal}px, ${vertical}px) rotate(${rotation}deg)`;
+            card.style.opacity = 0;
+            const badges = card.querySelectorAll('.badge');
+            badges.forEach(badge => (badge.style.opacity = 0));
+            stackToBack(card);
+        }
+
+        function pointerDown(event) {
+            const card = event.target.closest('.tinder-card');
+            if (!card || card !== cardsContainer.firstElementChild) return;
+
+            activeCard = card;
+            startX = event.clientX;
+            startY = event.clientY;
+            isDragging = true;
+            dragInitiated = false;
+            pointerDownOnContent = Boolean(event.target.closest('.card-info'));
+            currentPointerId = null;
+            card.style.transition = 'none';
+        }
+
+        function pointerMove(event) {
+            if (!isDragging || !activeCard) return;
+
+            if (dragInitiated && currentPointerId !== null && event.pointerId !== currentPointerId) {
+                return;
+            }
+
+            const dx = event.clientX - startX;
+            const dy = event.clientY - startY;
+            const absDx = Math.abs(dx);
+            const absDy = Math.abs(dy);
+            const activationThreshold = 14;
+
+            if (!dragInitiated) {
+                if (pointerDownOnContent && absDy > absDx && absDy > 10) {
+                    activeCard.style.transition = '';
+                    clearDragState();
+                    return;
+                }
+
+                if (absDx > activationThreshold || dy < -activationThreshold) {
+                    dragInitiated = true;
+                    currentPointerId = event.pointerId;
+                    activeCard.setPointerCapture(currentPointerId);
+                } else {
+                    return;
+                }
+            }
+
+            const rotate = dx * 0.06;
+            activeCard.style.transform = `translate(${dx}px, ${dy}px) rotate(${rotate}deg)`;
+
+            const badges = activeCard.querySelectorAll('.badge');
+            const likeBadge = badges[0];
+            const nopeBadge = badges[1];
+            const intensity = Math.min(Math.abs(dx) / 140, 1);
+            if (dx > 0) {
+                likeBadge.style.opacity = intensity;
+                nopeBadge.style.opacity = 0;
+            } else if (dx < 0) {
+                nopeBadge.style.opacity = intensity;
+                likeBadge.style.opacity = 0;
+            } else {
+                likeBadge.style.opacity = 0;
+                nopeBadge.style.opacity = 0;
+            }
+        }
+
+        function pointerUp(event) {
+            if (!isDragging || !activeCard) return;
+
+            if (dragInitiated) {
+                if (currentPointerId !== null && event.pointerId === currentPointerId) {
+                    activeCard.releasePointerCapture(currentPointerId);
+                } else if (currentPointerId !== null && event.pointerId !== currentPointerId) {
+                    return;
+                }
+            }
+
+            const dx = event.clientX - startX;
+            const dy = event.clientY - startY;
+            const threshold = 140;
+
+            if (!dragInitiated) {
+                activeCard.style.transition = '';
+                clearDragState();
+                return;
+            }
+
+            const badges = activeCard.querySelectorAll('.badge');
+            badges.forEach(badge => (badge.style.opacity = 0));
+
+            if (dx > threshold) {
+                handleSwipe(activeCard, 'right', dy);
+            } else if (dx < -threshold) {
+                handleSwipe(activeCard, 'left', dy);
+            } else if (!pointerDownOnContent && dy < -threshold) {
+                handleSwipe(activeCard, 'up', dy);
+            } else {
+                resetCard(activeCard);
+            }
+
+            clearDragState();
+        }
+
+        cardsContainer.addEventListener('pointerdown', pointerDown);
+        cardsContainer.addEventListener('pointermove', pointerMove);
+        cardsContainer.addEventListener('pointerup', pointerUp);
+        cardsContainer.addEventListener('pointercancel', pointerUp);
+        cardsContainer.addEventListener('pointerleave', event => {
+            if (isDragging && activeCard) {
+                pointerUp(event);
+            }
+        });
+
+        actionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const topCard = cardsContainer.querySelector('.tinder-card:first-child');
+                if (!topCard) return;
+
+                if (button.dataset.action === 'like') {
+                    const likeBadge = topCard.querySelector('.badge.like');
+                    if (likeBadge) likeBadge.style.opacity = 1;
+                    handleSwipe(topCard, 'right');
+                }
+
+                if (button.dataset.action === 'nope') {
+                    const nopeBadge = topCard.querySelector('.badge.nope');
+                    if (nopeBadge) nopeBadge.style.opacity = 1;
+                    handleSwipe(topCard, 'left');
+                }
+
+                if (button.dataset.action === 'superlike') {
+                    handleSwipe(topCard, 'up');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
