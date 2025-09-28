@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdad o Atrevimiento - Especial Cumple</title>
+    <style>
+        :root {
+            color-scheme: only light;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom, #aa151b 33.33%, #f1bf00 33.33%, #f1bf00 66.66%, #aa151b 66.66%);
+            text-align: center;
+            position: relative;
+            padding: 40px 20px 80px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .menu-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #8B0000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 60px;
+            background-color: #f9f9f9;
+            min-width: 260px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .dropdown-content a {
+            color: #111;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            font-weight: 600;
+        }
+
+        .dropdown-content a:hover {
+            background-color: rgba(170, 21, 27, 0.1);
+        }
+
+        .menu:hover .dropdown-content,
+        .menu:focus-within .dropdown-content {
+            display: block;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 32px;
+            padding: clamp(24px, 4vw, 48px);
+            max-width: min(640px, 90vw);
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(16px, 3vw, 24px);
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        button.choice {
+            border: none;
+            border-radius: 18px;
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button.choice.truth {
+            background: linear-gradient(135deg, #ff4b5c, #ff7a18);
+        }
+
+        button.choice.dare {
+            background: linear-gradient(135deg, #1cb5e0, #000851);
+        }
+
+        button.choice:active {
+            transform: scale(0.97);
+        }
+
+        button.choice:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .prompt {
+            background: rgba(255, 240, 245, 0.9);
+            border-radius: 24px;
+            padding: 20px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.2rem;
+            line-height: 1.5;
+            color: #4b1c1c;
+            font-weight: 600;
+        }
+
+        .prompt.hidden {
+            display: none;
+        }
+
+        .next-player {
+            background: #aa151b;
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .next-player:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(170, 21, 27, 0.35);
+        }
+
+        .next-player:active {
+            transform: scale(0.98);
+        }
+
+        .instructions {
+            font-size: 0.95rem;
+            color: rgba(75, 28, 28, 0.75);
+        }
+
+        @media (max-width: 480px) {
+            .menu-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 26px;
+            }
+
+            button.choice {
+                font-size: 1.05rem;
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <div class="menu-icon" tabindex="0">☰</div>
+        <div class="dropdown-content">
+            <a href="./index.html">Home Page</a>
+            <a href="./aboutsergio.html">Quién es Sergio?</a>
+            <a href="./aboutteam.html">Equipo cumple</a>
+            <a href="./ruleta.html">Ruleta de la suerte!</a>
+            <a href="./tinder.html">Juega al Tinder!</a>
+            <a href="./verdad.html">Verdad o atrevimiento</a>
+        </div>
+    </div>
+
+    <h1>Verdad o atrevimiento 🔥</h1>
+    <h2>Especial cumple 32: risas, salseo y cero filtros.</h2>
+
+    <div class="game-card">
+        <p class="instructions">Elige <strong>Verdad</strong> si te atreves a abrir el corazón o <strong>Atrevimiento</strong> si prefieres sudar la camiseta. ¡Luego pasa el móvil con "Siguiente jugador"!</p>
+
+        <div class="choices">
+            <button class="choice truth" id="truthBtn">Verdad</button>
+            <button class="choice dare" id="dareBtn">Atrevimiento</button>
+        </div>
+
+        <div class="prompt hidden" id="prompt"></div>
+
+        <button class="next-player hidden" id="nextBtn">Siguiente jugador ➜</button>
+    </div>
+
+    <script>
+        const truths = [
+            "Describe la señal más clara de que alguien aquí te atrae.",
+            "Confiesa la fantasía más loca que aún no te has atrevido a probar.",
+            "¿Qué mensaje le escribirías ahora mismo a tu ex después de un par de copas?",
+            "Cuenta el momento más vergonzoso que has vivido frente a la pareja de un colega.",
+            "¿Cuál ha sido tu peor cita y por qué otra persona aquí quizá la habría disfrutado?",
+            "Si tuvieras que hacer un match con alguien de esta ronda, ¿a quién elegirías y con qué frase abrirías?",
+            "¿Qué rumor sobre ti te gustaría aclarar esta noche de una vez por todas?",
+            "Describe el recuerdo de fiesta más salvaje que tienes, aunque hoy te dé un poco de pudor.",
+            "¿Qué secreto picante de otra persona conoces y aún no has contado?",
+            "¿Cuál ha sido tu mayor fail ligando en la última década?",
+            "Si tu pareja (o crush) pudiera escuchar una confesión tuya ahora mismo, ¿qué le dirías?",
+            "¿Qué es lo más loco que has hecho para impresionar a alguien y que hoy te da cringe?"
+        ];
+
+        const dares = [
+            "Envía un audio de 30 segundos al grupo haciendo tu declaración de amor más dramática con voz de locutor.",
+            "Haz un brindis improvisado en modo coach motivacional para los solteros de la mesa.",
+            "Baila reguetón lento con la primera persona a tu derecha durante 20 segundos.",
+            "Envía un mensaje privado a tu último match diciendo: 'Esta noche brindaré por ti, ¿te unes?'.",
+            "Deja que alguien elija una historia tuya para subirla a Instagram con un filtro ridículo.",
+            "Imita durante un minuto la forma de ligar de otra persona presente (con cariño, eh).",
+            "Deja que alguien que el grupo escoja escriba el siguiente mensaje que enviarás por WhatsApp.",
+            "Bebe un sorbo de tu copa sin usar las manos, estilo brindis torero.",
+            "Cuenta un secreto tuyo picante susurrándolo al oído de la persona que elijas; si se ríe, debes compartirlo en voz alta.",
+            "Haz 15 sentadillas mientras mantienes contacto visual con alguien del grupo.",
+            "Publica en tu historia una foto con tu pose más sensual usando el hashtag #CumpleEnLlamas.",
+            "Pide un abrazo grupal y grita '¡Vivan los matches imposibles!' mientras lo dais."
+        ];
+
+        let truthDeck = shuffle([...truths]);
+        let dareDeck = shuffle([...dares]);
+        let truthIndex = 0;
+        let dareIndex = 0;
+
+        const promptEl = document.getElementById('prompt');
+        const nextBtn = document.getElementById('nextBtn');
+        const truthBtn = document.getElementById('truthBtn');
+        const dareBtn = document.getElementById('dareBtn');
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function showPrompt(type) {
+            if (type === 'truth') {
+                if (truthIndex >= truthDeck.length) {
+                    truthDeck = shuffle([...truths]);
+                    truthIndex = 0;
+                }
+                promptEl.textContent = truthDeck[truthIndex++];
+            } else {
+                if (dareIndex >= dareDeck.length) {
+                    dareDeck = shuffle([...dares]);
+                    dareIndex = 0;
+                }
+                promptEl.textContent = dareDeck[dareIndex++];
+            }
+
+            promptEl.classList.remove('hidden');
+            nextBtn.classList.remove('hidden');
+        }
+
+        function resetRound() {
+            promptEl.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+            promptEl.textContent = '';
+        }
+
+        truthBtn.addEventListener('click', () => showPrompt('truth'));
+        dareBtn.addEventListener('click', () => showPrompt('dare'));
+        nextBtn.addEventListener('click', resetRound);
+    </script>
+</body>
+</html>
