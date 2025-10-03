@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karaoke Español</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to bottom, #aa151b 33.33%, #f1bf00 33.33%, #f1bf00 66.66%, #aa151b 66.66%);
+            color: #2b2b2b;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 28px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+            max-width: 960px;
+            width: 100%;
+            padding: 40px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 48px;
+            color: #aa151b;
+        }
+
+        p.description {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: #5b5b5b;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #randomSong {
+            background: linear-gradient(135deg, #aa151b, #f1bf00);
+            color: white;
+            box-shadow: 0 8px 20px rgba(170, 21, 27, 0.35);
+        }
+
+        #openSpotify {
+            background: #1DB954;
+            color: white;
+            box-shadow: 0 8px 20px rgba(29, 185, 84, 0.35);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .selected-song {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #aa151b;
+            margin-bottom: 30px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        li {
+            background: white;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        li span.title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #aa151b;
+        }
+
+        li span.artist {
+            font-size: 16px;
+            color: #555;
+        }
+
+        li.active {
+            outline: 3px solid #f1bf00;
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 24px;
+            left: 32px;
+            text-decoration: none;
+            color: #aa151b;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .selected-song {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back-link" href="./index.html">← Volver</a>
+        <h1>Karaoke Español</h1>
+        <p class="description">Canciones míticas y divertidas para dejarte la voz como en una verbena.</p>
+
+        <div class="selected-song" id="selectedSong">Pulsa "Sorpréndeme" para elegir una canción.</div>
+
+        <div class="actions">
+            <button id="randomSong">Sorpréndeme</button>
+            <button id="openSpotify" disabled>Escuchar en Spotify</button>
+        </div>
+
+        <ul id="songList"></ul>
+    </div>
+
+    <script>
+        const songs = [
+            { title: "Paquito el Chocolatero", artist: "Grupo Santamaría", spotifyUrl: "https://open.spotify.com/search/Paquito%20el%20Chocolatero%20Grupo%20Santamar%C3%ADa" },
+            { title: "La Macarena", artist: "Los Del Río", spotifyUrl: "https://open.spotify.com/search/La%20Macarena%20Los%20Del%20R%C3%ADo" },
+            { title: "Aserejé (The Ketchup Song)", artist: "Las Ketchup", spotifyUrl: "https://open.spotify.com/search/Aserej%C3%A9%20Las%20Ketchup" },
+            { title: "El Baile de los Pajaritos", artist: "María Jesús y su Acordeón", spotifyUrl: "https://open.spotify.com/search/El%20Baile%20de%20los%20Pajaritos%20Mar%C3%ADa%20Jes%C3%BAs" },
+            { title: "La Barbacoa", artist: "Georgie Dann", spotifyUrl: "https://open.spotify.com/search/La%20Barbacoa%20Georgie%20Dann" },
+            { title: "El Chiringuito", artist: "Georgie Dann", spotifyUrl: "https://open.spotify.com/search/El%20Chiringuito%20Georgie%20Dann" },
+            { title: "La Yenka", artist: "Johnny & Charley", spotifyUrl: "https://open.spotify.com/search/La%20Yenka%20Johnny%20Charley" },
+            { title: "Un Rayo de Sol", artist: "Los Diablos", spotifyUrl: "https://open.spotify.com/search/Un%20Rayo%20de%20Sol%20Los%20Diablos" },
+            { title: "Eva María", artist: "Fórmula V", spotifyUrl: "https://open.spotify.com/search/Eva%20Mar%C3%ADa%20F%C3%B3rmula%20V" },
+            { title: "Vacaciones de Verano", artist: "Fórmula V", spotifyUrl: "https://open.spotify.com/search/Vacaciones%20de%20Verano%20F%C3%B3rmula%20V" },
+            { title: "Borriquito Como Tú", artist: "Peret", spotifyUrl: "https://open.spotify.com/search/Borriquito%20Como%20T%C3%BA%20Peret" },
+            { title: "El Tractor Amarillo", artist: "Zapato Veloz", spotifyUrl: "https://open.spotify.com/search/El%20Tractor%20Amarillo%20Zapato%20Veloz" },
+            { title: "La Ramona", artist: "Fernando Esteso", spotifyUrl: "https://open.spotify.com/search/La%20Ramona%20Fernando%20Esteso" },
+            { title: "Devuélveme a Mi Chica (Sufre Mamón)", artist: "Hombres G", spotifyUrl: "https://open.spotify.com/search/Devu%C3%A9lveme%20a%20Mi%20Chica%20Hombres%20G" },
+            { title: "Voy a Pasármelo Bien", artist: "Hombres G", spotifyUrl: "https://open.spotify.com/search/Voy%20a%20Pas%C3%A1rmelo%20Bien%20Hombres%20G" },
+            { title: "Sarandonga", artist: "Lola Flores", spotifyUrl: "https://open.spotify.com/search/Sarandonga%20Lola%20Flores" },
+            { title: "Que Viva España", artist: "Manolo Escobar", spotifyUrl: "https://open.spotify.com/search/Que%20Viva%20Espa%C3%B1a%20Manolo%20Escobar" },
+            { title: "El Porompompero", artist: "Manolo Escobar", spotifyUrl: "https://open.spotify.com/search/El%20Porompompero%20Manolo%20Escobar" },
+            { title: "Yo Quiero Bailar", artist: "Sonia y Selena", spotifyUrl: "https://open.spotify.com/search/Yo%20Quiero%20Bailar%20Sonia%20y%20Selena" },
+            { title: "La Chica Ye-Yé", artist: "Concha Velasco", spotifyUrl: "https://open.spotify.com/search/La%20Chica%20Ye-Y%C3%A9%20Concha%20Velasco" }
+        ];
+
+        const songList = document.getElementById('songList');
+        const selectedSong = document.getElementById('selectedSong');
+        const randomButton = document.getElementById('randomSong');
+        const openSpotifyButton = document.getElementById('openSpotify');
+
+        let currentSong = null;
+        let activeItem = null;
+
+        function renderSongs() {
+            songs.forEach(song => {
+                const item = document.createElement('li');
+                const title = document.createElement('span');
+                const artist = document.createElement('span');
+
+                title.textContent = song.title;
+                title.classList.add('title');
+                artist.textContent = song.artist;
+                artist.classList.add('artist');
+
+                item.appendChild(title);
+                item.appendChild(artist);
+                item.addEventListener('click', () => selectSong(song, item));
+
+                songList.appendChild(item);
+            });
+        }
+
+        function selectSong(song, item) {
+            currentSong = song;
+            selectedSong.textContent = `${song.title} – ${song.artist}`;
+            openSpotifyButton.disabled = false;
+
+            if (activeItem) {
+                activeItem.classList.remove('active');
+            }
+            if (item) {
+                activeItem = item;
+                activeItem.classList.add('active');
+            }
+        }
+
+        function selectRandomSong() {
+            const randomIndex = Math.floor(Math.random() * songs.length);
+            const items = songList.querySelectorAll('li');
+            selectSong(songs[randomIndex], items[randomIndex]);
+        }
+
+        randomButton.addEventListener('click', selectRandomSong);
+
+        openSpotifyButton.addEventListener('click', () => {
+            if (currentSong) {
+                window.open(currentSong.spotifyUrl, '_blank');
+            }
+        });
+
+        renderSongs();
+        selectRandomSong();
+    </script>
+</body>
+</html>
