@@ -6,19 +6,18 @@
     <title>Sergio Cumple 30!</title>
     <style>
         body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(to bottom, #aa151b 33.33%, #f1bf00 33.33%, #f1bf00 66.66%, #aa151b 66.66%);
-        /* Spanish flag background */
-        text-align: center;
-        position: relative;
-        /* For positioning the menu */
-    }
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #aa151b 33.33%, #f1bf00 33.33%, #f1bf00 66.66%, #aa151b 66.66%);
+            /* Spanish flag background */
+            text-align: center;
+            position: relative;
+        }
 
         canvas {
             border: 5px solid #333;
@@ -57,72 +56,30 @@
             border: 5px solid #333;
         }
 
-        /* Menu styles */
-        .menu {
+        /* Home link (replaces burger menu) */
+        .home-link {
             position: absolute;
             top: 20px;
             right: 20px;
-            font-size: 30px;
-            cursor: pointer;
-            z-index: 10; /* Ensure it stays on top */
-        }
-
-        .menu-icon {
-            width: 50px;
-            height: 50px;
-            background-color: #8B0000; /* Dark Red color */
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            cursor: pointer;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 60px; /* Adjusted for the circle */
-            background-color: #f9f9f9;
-            min-width: 300px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-        }
-
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
+            background-color: #8B0000; /* Dark red */
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 999px;
             text-decoration: none;
-            display: block;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         }
 
-        .dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-
-        .menu:hover .dropdown-content {
-            display: block;
+        .home-link:hover {
+            background-color: #a80000;
         }
     </style>
 </head>
 <body>
-    <div class="menu">
-        <div class="menu-icon">
-            ☰
-        </div>
-        <div class="dropdown-content">
-            <a href="./index.html">Home Page</a>
-            <a href="./aboutsergio.html">Quién es Sergio?</a>
-            <a href="./aboutteam.html">Equipo cumple</a>
-            <a href="./ruleta.html">Ruleta de la suerte!</a>
-            <a href="./tinder.html">Juega al Tinder!</a>
-            <a href="./verdad.html">Verdad o atrevimiento</a>
-        </div>
-    </div>
+    <a class="home-link" href="./index.html">Home</a>
 
-    <h1>Sergio Cumple 30!</h1>
+    <h1>Sergio Cumple 32!</h1>
     <img src="./assets/sergio.png" alt="Sergio">
 
     <canvas id="wheelCanvas" width="400" height="400"></canvas>
@@ -137,8 +94,6 @@
         const ctx = canvas.getContext('2d');
         const spinButton = document.getElementById('spinButton');
         const choicesInput = document.getElementById('choicesInput');
-        const menu = document.querySelector('.menu');
-        const dropdownContent = document.querySelector('.dropdown-content');
 
         let choices = ["Chupito!", "Perreo intenso", "Cantar canción", "Baile sexy", "Lo que diga Sergio", "Dar instagram", "Reto sorpresa", "Piquito con Ibético"];
         let startAngle = 0;
@@ -176,8 +131,10 @@
 
                 ctx.save();
                 ctx.fillStyle = "black";
-                ctx.translate(canvas.width / 2 + Math.cos(angle + arc / 2) * textRadius,
-                    canvas.height / 2 + Math.sin(angle + arc / 2) * textRadius);
+                ctx.translate(
+                    canvas.width / 2 + Math.cos(angle + arc / 2) * textRadius,
+                    canvas.height / 2 + Math.sin(angle + arc / 2) * textRadius
+                );
                 ctx.rotate(angle + arc / 2 + Math.PI / 2);
                 const text = choices[i];
                 ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
@@ -221,22 +178,19 @@
 
             // Calculate the angle where the arrow is pointing
             const degrees = startAngle * 180 / Math.PI + 90;
-            const arcd = arc * 180 / Math.PI; // This was incorrectly set to 180/180 before
+            const arcd = arc * 180 / Math.PI;
             let index = Math.floor((360 - degrees % 360) / arcd);
 
-            // Adjust index for cases where it falls out of bounds due to floating point precision
             if (index >= choices.length) {
                 index = index % choices.length;
             }
 
-            // Display the selected choice in the center of the wheel
             ctx.save();
             ctx.font = 'bold 30px Arial';
             const text = choices[index];
             ctx.fillText(text, canvas.width / 2 - ctx.measureText(text).width / 2, canvas.height / 2 + 10);
             ctx.restore();
         }
-
 
         function easeOut(t, b, c, d) {
             const ts = (t /= d) * t;
@@ -266,9 +220,9 @@
 
             const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             const minSpeed = 0.3;
-            const speed = distance / deltaTime  + minSpeed;
+            const speed = distance / deltaTime + minSpeed;
 
-            spinAngleStart = Math.min(50, speed * 100); // Cap the max speed for control
+            spinAngleStart = Math.min(50, speed * 100);
             spinTime = 0;
             spinTimeTotal = Math.random() * 3000 + 4000;
 
@@ -279,7 +233,11 @@
         spinButton.addEventListener('click', () => {
             if (isSpinning) return;
 
-            const userChoices = choicesInput.value.split(',').map(choice => choice.trim()).filter(choice => choice !== '');
+            const userChoices = choicesInput.value
+                .split(',')
+                .map(choice => choice.trim())
+                .filter(choice => choice !== '');
+
             if (userChoices.length > 1) {
                 choices = userChoices;
             } else if (choicesInput.value.trim() === '') {
@@ -295,22 +253,6 @@
 
             isSpinning = true;
             rotateWheel();
-        });
-
-        // Add event listeners to handle touch events on the menu
-        menu.addEventListener('touchstart', (e) => {
-            dropdownContent.style.display = 'block';
-            // Disable pointer events on canvas when menu is being interacted with
-            canvas.style.pointerEvents = 'none';
-        });
-
-        document.addEventListener('touchend', (e) => {
-            // Check if the touch event is outside the menu
-            if (!menu.contains(e.target)) {
-                dropdownContent.style.display = 'none';
-                // Enable pointer events on canvas when menu interaction ends
-                canvas.style.pointerEvents = 'auto';
-            }
         });
 
         drawRouletteWheel();

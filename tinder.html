@@ -3,18 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tinder Cumple - Swipe Party</title>
+    <title>Bumble Cumple - Swipe Party</title>
     <style>
         :root {
             color-scheme: only light;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            --bg: #111;
-            --card-bg: #1a1a1a;
-            --text: #fff;
-            --muted: #c3c3c3;
-            --accent-like: #3bd389;
-            --accent-pass: #f75e76;
-            --accent-info: #30a7ff;
+            font-family: 'Helvetica Neue', system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+
+            --bg: #fff7ec;
+            --bg-strong: #ffe4b8;
+            --card-bg: #ffffff;
+            --text: #222222;
+            --muted: #777777;
+
+            --accent-primary: #ffbe2f;
+            --accent-primary-soft: #ffe6a5;
+
+            --accent-like: #00b894;
+            --accent-pass: #ff7675;
+            --accent-super: #0984e3;
         }
 
         * {
@@ -23,7 +29,8 @@
 
         body {
             margin: 0;
-            background: radial-gradient(circle at top, #2d0b45, #050505 45%);
+            background:
+                radial-gradient(circle at top, #ffe7b8, #fff7ec 42%, #ffecc8 100%);
             color: var(--text);
             display: flex;
             flex-direction: column;
@@ -34,58 +41,150 @@
 
         header {
             width: 100%;
-            padding: 20px clamp(16px, 3vw, 40px);
+            padding: 16px clamp(16px, 4vw, 32px);
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 10;
-            background: linear-gradient(180deg, rgba(5,5,5,0.95), rgba(5,5,5,0.5), rgba(5,5,5,0));
-            backdrop-filter: blur(6px);
+            background: rgba(255, 247, 236, 0.96);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
         }
 
-        header img {
-            height: 36px;
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 12px;
+            background: radial-gradient(circle at 30% 0%, #fff9e6 0, #ffbe2f 45%, #f4a90c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-logo::before {
+            content: "";
+            width: 18px;
+            height: 16px;
+            border-radius: 4px;
+            border: 2px solid #fff;
+            box-sizing: border-box;
+            transform: translateY(-2px);
+        }
+
+        .brand-logo::after {
+            content: "";
+            position: absolute;
+            bottom: 4px;
+            width: 10px;
+            height: 4px;
+            border-radius: 999px;
+            border: 2px solid #fff;
+            border-top: none;
+            box-sizing: border-box;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            font-size: 15px;
+        }
+
+        .brand-subtitle {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--muted);
         }
 
         .menu {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .menu a {
             color: var(--muted);
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.2s ease;
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
         }
 
         .menu a:hover,
         .menu a:focus {
+            background: rgba(0,0,0,0.04);
             color: var(--text);
+            transform: translateY(-1px);
+        }
+
+        .menu a.menu-pill {
+            background: var(--accent-primary);
+            color: #3f2500;
         }
 
         main {
-            width: min(480px, 92vw);
-            margin: 0 auto 40px;
+            width: min(460px, 92vw);
+            margin: 18px auto 48px;
             position: relative;
             flex: 1;
         }
 
+        .top-pill {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--muted);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .top-pill span {
+            background: #fff;
+            border-radius: 999px;
+            padding: 6px 14px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-pill span::before {
+            content: "🎉";
+        }
+
         .card-stack {
             position: relative;
-            min-height: 70vh;
+            min-height: 68vh;
         }
 
         .tinder-card {
             position: absolute;
             inset: 0;
             background: var(--card-bg);
-            border-radius: 32px;
+            border-radius: 26px;
             overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+            box-shadow:
+                0 16px 40px rgba(0,0,0,0.15),
+                0 0 0 1px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
             touch-action: pan-y;
@@ -94,49 +193,68 @@
 
         .tinder-card img {
             width: 100%;
-            height: 58vh;
+            height: 54vh;
             object-fit: cover;
         }
 
         .card-gradient {
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.85) 100%);
+            background: linear-gradient(
+                180deg,
+                rgba(0,0,0,0.05) 30%,
+                rgba(0,0,0,0.65) 100%
+            );
         }
 
         .card-content {
             position: relative;
-            margin-top: -120px;
-            padding: 24px clamp(18px, 4vw, 32px) 32px;
+            margin-top: -110px;
+            padding: 20px clamp(18px, 4vw, 26px) 24px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
             flex: 1;
         }
 
         .card-header {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
+            /* NEW: light solid background box */
+            background: rgba(255, 255, 255, 0.96);
+            color: #3a2600;
+            padding: 14px 20px;
+            border-radius: 18px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+            max-width: 85%;
+            margin: 0 auto 8px;
+            text-align: center;
         }
 
         .card-header h2 {
             margin: 0;
-            font-size: clamp(26px, 5vw, 34px);
-            letter-spacing: 0.3px;
+            font-size: clamp(24px, 5vw, 30px);
+            letter-spacing: 0.2px;
+            color: inherit; /* use dark text */
         }
 
         .card-header span {
-            color: var(--muted);
-            font-size: clamp(14px, 3.2vw, 16px);
+            color: rgba(58, 38, 0, 0.85);
+            font-size: 14px;
+        }
+
+        .card-header span:last-child {
+            font-size: 13px;
+            color: rgba(58, 38, 0, 0.7);
         }
 
         .card-body {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
             overflow-y: auto;
-            padding-right: 4px;
+            padding-right: 2px;
             scrollbar-width: thin;
         }
 
@@ -145,170 +263,291 @@
         }
 
         .card-body::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255,255,255,0.5);
             border-radius: 10px;
         }
 
         .section-title {
             text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 2px;
-            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 2px;
         }
 
         .bio {
-            font-size: 16px;
-            line-height: 1.6;
+            font-size: 14px;
+            line-height: 1.55;
+            color: rgba(255,255,255,0.96);
         }
 
         .tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
 
         .tag {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.14);
+            padding: 7px 12px;
             border-radius: 999px;
-            font-size: 13px;
+            font-size: 12px;
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         .anthem {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            padding: 12px 14px;
+            background: rgba(0,0,0,0.24);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.4);
         }
 
         .anthem span:first-child {
             display: inline-flex;
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #ff6a6a, #ff3b3b);
+            background: #ffffff;
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            color: #ffb123;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+        }
+
+        .anthem strong {
+            font-size: 13px;
+            color: #ffffff;
+        }
+
+        .anthem p {
+            margin: 4px 0 0;
+            color: rgba(255,255,255,0.75);
+            font-size: 11px;
         }
 
         .card-status {
             position: absolute;
             top: 24px;
-            left: 24px;
-            padding: 8px 18px;
-            border: 4px solid;
-            border-radius: 16px;
-            font-weight: 700;
-            font-size: 20px;
-            letter-spacing: 2px;
+            padding: 6px 16px;
+            border: 3px solid;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
             opacity: 0;
-            transform: rotate(-12deg) scale(0.9);
             transition: opacity 0.2s ease, transform 0.2s ease;
             pointer-events: none;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(3px);
         }
 
         .card-status.like {
-            border-color: var(--accent-like);
-            color: var(--accent-like);
+            left: 18px;
+            border-color: var(--accent-primary);
+            color: #3f2500;
+            transform: rotate(-14deg) scale(0.9);
         }
 
         .card-status.nope {
+            right: 18px;
             border-color: var(--accent-pass);
-            color: var(--accent-pass);
-            right: 24px;
-            left: auto;
-            transform: rotate(12deg) scale(0.9);
+            color: #5b0500;
+            transform: rotate(14deg) scale(0.9);
+        }
+
+        .actions-shell {
+            position: sticky;
+            bottom: 0;
+            margin-top: 26px;
+            padding-bottom: 10px;
         }
 
         .actions {
             display: flex;
             justify-content: center;
             gap: 22px;
-            margin-top: 24px;
+            margin-top: 4px;
+            padding: 10px 12px 18px;
+            background: rgba(255,247,236,0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 26px;
+            box-shadow:
+                0 -6px 18px rgba(0,0,0,0.04),
+                0 10px 26px rgba(0,0,0,0.08);
         }
 
         .actions button {
-            width: 68px;
-            height: 68px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             border: none;
             font-size: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.12);
-            color: var(--text);
             cursor: pointer;
-            transition: transform 0.15s ease, background 0.2s ease;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, border 0.12s ease;
+            background: #ffffff;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+            border: 2px solid transparent;
         }
 
-        .actions button:active {
-            transform: scale(0.92);
-        }
-
-        .actions button.like {
-            background: rgba(59, 211, 137, 0.18);
+        .actions button span {
+            transform: translateY(1px);
         }
 
         .actions button.nope {
-            background: rgba(247, 94, 118, 0.18);
+            color: var(--accent-pass);
+        }
+
+        .actions button.like {
+            color: var(--accent-like);
         }
 
         .actions button.super {
-            background: rgba(48, 167, 255, 0.18);
+            color: var(--accent-primary);
+        }
+
+        .actions button:active {
+            transform: scale(0.9) translateY(1px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+        }
+
+        .actions button:hover {
+            border-color: rgba(0,0,0,0.08);
+            background: #fffdf7;
+        }
+
+        .actions button.super {
+            width: 54px;
+            height: 54px;
+            background: var(--accent-primary);
+            color: #3f2500;
+            box-shadow: 0 10px 24px rgba(255,190,47,0.7);
+        }
+
+        .actions button.super:hover {
+            background: #ffd75b;
         }
 
         .empty-state {
-            margin-top: 80px;
+            margin-top: 64px;
             text-align: center;
             color: var(--muted);
+            font-size: 14px;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+            font-size: 18px;
+            color: var(--text);
+        }
+
+        .empty-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.06);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-top: 10px;
+            color: var(--muted);
+        }
+
+        .empty-pill::before {
+            content: "🐝";
         }
 
         @media (max-width: 520px) {
             header {
-                padding: 16px 20px;
+                padding: 14px 16px;
             }
             .menu {
-                gap: 10px;
+                gap: 6px;
             }
             .menu a {
+                font-size: 12px;
+                padding-inline: 10px;
+            }
+            .brand-title {
                 font-size: 14px;
+            }
+            .brand-subtitle {
+                display: none;
+            }
+            .actions {
+                gap: 18px;
+            }
+            .actions button {
+                width: 58px;
+                height: 58px;
+            }
+            .actions button.super {
+                width: 50px;
+                height: 50px;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <img src="./assets/tinderlogo.png" alt="Tinder Cumple" />
+        <div class="brand">
+            <div class="brand-logo" aria-hidden="true"></div>
+            <div class="brand-text">
+                <div class="brand-title">Bumble Cumple</div>
+                <div class="brand-subtitle">Swipe party de amigos</div>
+            </div>
+        </div>
         <nav class="menu">
-            <a href="./index.html">Home</a>
+            <a href="./index.html" class="menu-pill">Inicio</a>
             <a href="./ruleta.html">Ruleta</a>
-            <a href="./verdad.html">Verdad o atrevimiento</a>
+            <a href="#" aria-disabled="true" style="opacity:0.5; cursor:default;">Muy pronto…</a>
         </nav>
     </header>
+
     <main>
-        <section class="card-stack" id="cardStack" aria-live="polite"></section>
-        <div class="actions" aria-label="Acciones de swipe">
-            <button class="nope" aria-label="Descartar" data-action="nope">✕</button>
-            <button class="super" aria-label="Super like" data-action="super">★</button>
-            <button class="like" aria-label="Me gusta" data-action="like">❤</button>
+        <div class="top-pill">
+            <span>Modo fiesta activado</span>
         </div>
+
+        <section class="card-stack" id="cardStack" aria-live="polite"></section>
+
+        <div class="actions-shell">
+            <div class="actions" aria-label="Acciones de swipe">
+                <button class="nope" aria-label="Descartar" data-action="nope">
+                    <span>✕</span>
+                </button>
+                <button class="super" aria-label="Super match" data-action="super">
+                    <span>★</span>
+                </button>
+                <button class="like" aria-label="Me gusta" data-action="like">
+                    <span>❤</span>
+                </button>
+            </div>
+        </div>
+
         <div class="empty-state" id="emptyState" hidden>
-            <h3>¡Has visto a todo el mundo!</h3>
-            <p>Vuelve pronto, el equipo del cumple está buscando más matches para ti.</p>
+            <h3>¡Has visto a todo el mundo! 💛</h3>
+            <p>Vuelve luego, el enjambre del cumple está preparando más matches para ti.</p>
+            <div class="empty-pill">Más perfiles en camino</div>
         </div>
     </main>
 
     <script>
         const profiles = [
-            
             {
                 name: 'Pau',
-                age: 28,
+                age: 31,
                 location: 'Madrid · 5 km',
                 job: 'Especialista en marketing digital y chef amateur',
                 bio: 'Cocino paellas brutales. Me apunto a cualquier plan con playa o terrazas.',
@@ -318,7 +557,7 @@
             },
             {
                 name: 'Sergio',
-                age: 30,
+                age: 32,
                 location: 'Madrid · 1 km',
                 job: 'Product manager y cumpleañero oficial',
                 bio: 'Organizo fiestas como si fueran releases. Me encanta bailar reggaetón noventero y tengo playlist para cada momento.',
@@ -328,7 +567,7 @@
             },
             {
                 name: 'Adrián',
-                age: 27,
+                age: 31,
                 location: 'Madrid · 6 km',
                 job: 'Arquitecto de experiencias inmersivas',
                 bio: 'De día diseño espacios, de noche mezclo cócteles. Siempre tengo un plan cultural y uno clandestino.',
@@ -338,7 +577,7 @@
             },
             {
                 name: 'Pablo',
-                age: 31,
+                age: 29,
                 location: 'Madrid · 2 km',
                 job: 'Chef creativo y storyteller gastronómico',
                 bio: 'Si no estás bailando mientras cocino, algo estamos haciendo mal. Premio a la mejor tortilla en 2023 (según mi abuela).',
@@ -348,7 +587,7 @@
             },
             {
                 name: 'Dani',
-                age: 29,
+                age: 31,
                 location: 'Madrid · 4 km',
                 job: 'Ingeniero de sonido en festivales',
                 bio: 'Tengo un don para conseguir backstage y hacerte fan de bandas que aún no existen. Sí, llevo tapones en el bolsillo.',
@@ -358,7 +597,7 @@
             },
             {
                 name: 'Ángel',
-                age: 29,
+                age: 30,
                 location: 'Cambridge · 2790 km',
                 job: 'Desarrollador web y nómada digital',
                 bio: 'Fan del reggaetón en acústico, coleccionista de chaquetas de cuero y experto improvisado en karaokes.',
@@ -382,7 +621,7 @@
 
             card.innerHTML = `
                 <div class="card-status like">MATCH</div>
-                <div class="card-status nope">NOPE</div>
+                <div class="card-status nope">NEXT</div>
                 <img src="${profile.image}" alt="${profile.name}" loading="lazy" />
                 <div class="card-gradient" aria-hidden="true"></div>
                 <div class="card-content">
@@ -397,7 +636,7 @@
                             <p class="bio">${profile.bio}</p>
                         </div>
                         <div>
-                            <p class="section-title">Pasiones</p>
+                            <p class="section-title">Intereses</p>
                             <div class="tags">
                                 ${profile.passions.map((passion) => `<span class="tag">${passion}</span>`).join('')}
                             </div>
@@ -408,7 +647,7 @@
                                 <span>♪</span>
                                 <div>
                                     <strong>${profile.anthem}</strong>
-                                    <p style="margin:4px 0 0;color:var(--muted);font-size:13px;">Spotify no incluido, sorry.</p>
+                                    <p>Ideal para este match de cumpleaños.</p>
                                 </div>
                             </div>
                         </div>
@@ -424,7 +663,7 @@
             stack.innerHTML = '';
             profiles.slice(currentIndex).forEach((profile, idx) => {
                 const card = createCard(profile, idx);
-                card.style.transform = `scale(${1 - idx * 0.05}) translateY(${idx * 16}px)`;
+                card.style.transform = `scale(${1 - idx * 0.04}) translateY(${idx * 16}px)`;
                 card.style.opacity = idx > 2 ? 0 : 1;
                 stack.appendChild(card);
             });
@@ -465,11 +704,11 @@
                 const opacity = Math.min(Math.abs(distanceX) / 160, 1);
                 if (distanceX > 0) {
                     likeStamp.style.opacity = opacity;
-                    likeStamp.style.transform = `rotate(-12deg) scale(${0.9 + opacity * 0.2})`;
+                    likeStamp.style.transform = `rotate(-14deg) scale(${0.9 + opacity * 0.2})`;
                     nopeStamp.style.opacity = 0;
                 } else {
                     nopeStamp.style.opacity = opacity;
-                    nopeStamp.style.transform = `rotate(12deg) scale(${0.9 + opacity * 0.2})`;
+                    nopeStamp.style.transform = `rotate(14deg) scale(${0.9 + opacity * 0.2})`;
                     likeStamp.style.opacity = 0;
                 }
             }
