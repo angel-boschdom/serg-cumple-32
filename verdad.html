@@ -36,56 +36,26 @@
             font-weight: 400;
         }
 
-        .menu {
+        /* New "Inicio" button */
+        .home-button {
             position: absolute;
             top: 20px;
-            right: 20px;
-            font-size: 30px;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .menu-icon {
-            width: 50px;
-            height: 50px;
-            background-color: #8B0000;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 60px;
-            background-color: #f9f9f9;
-            min-width: 260px;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.25);
-        }
-
-        .dropdown-content a {
-            color: #111;
-            padding: 12px 20px;
+            left: 20px;
+            padding: 10px 20px;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #aa151b;
+            font-weight: 700;
+            font-size: 0.95rem;
             text-decoration: none;
-            display: block;
-            font-weight: 600;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            border: none;
+            cursor: pointer;
         }
 
-        .dropdown-content a:hover {
-            background-color: rgba(170, 21, 27, 0.1);
-        }
-
-        .menu:hover .dropdown-content,
-        .menu:focus-within .dropdown-content {
-            display: block;
+        .home-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
         }
 
         .game-card {
@@ -180,10 +150,9 @@
         }
 
         @media (max-width: 480px) {
-            .menu-icon {
-                width: 44px;
-                height: 44px;
-                font-size: 26px;
+            .home-button {
+                padding: 8px 16px;
+                font-size: 0.85rem;
             }
 
             button.choice {
@@ -194,17 +163,8 @@
     </style>
 </head>
 <body>
-    <div class="menu">
-        <div class="menu-icon" tabindex="0">☰</div>
-        <div class="dropdown-content">
-            <a href="./index.html">Home Page</a>
-            <a href="./aboutsergio.html">Quién es Sergio?</a>
-            <a href="./aboutteam.html">Equipo cumple</a>
-            <a href="./ruleta.html">Ruleta de la suerte!</a>
-            <a href="./tinder.html">Juega al Tinder!</a>
-            <a href="./verdad.html">Verdad o atrevimiento</a>
-        </div>
-    </div>
+    <!-- New Inicio button -->
+    <a href="./index.html" class="home-button">Inicio</a>
 
     <h1>Verdad o atrevimiento 🔥</h1>
     <h2>Especial cumple 32: risas, salseo y cero filtros.</h2>
